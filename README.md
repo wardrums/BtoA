@@ -6,8 +6,7 @@ Blender to Arnold
 
   1. Install Arnold from https://www.solidangle.com/arnold/download i used MtoA, but any should work.
   2. Run 2to3 on the arnold python directory. copy directory into blenders module path
-  3a. add the directory to (libai.dll, libai.so, libai.dylib) to your LD_LIB_PATH or;
-  3b. edit arnold_common.py in the arnold directory to point to the location of libai.
+  3. add the directory to (libai.dll, libai.so, libai.dylib) to your LD_LIB_PATH or edit arnold_common.py in the arnold directory to point to the location of libai.
   4. install BtoA
   5. Activate inside blender.
   
