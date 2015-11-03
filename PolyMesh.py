@@ -32,7 +32,7 @@ class PolyMesh():
         AiNodeSetStr(self.amesh,b"name",self.mesh.name.encode('utf-8')) 
 
         # create shorthand variables
-        faces = self.meshdata.faces
+        faces = self.meshdata.polygons
         vertices = self.meshdata.vertices
         numFaces = len(faces)
         numVerts = len(vertices)

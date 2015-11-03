@@ -18,7 +18,7 @@ class Renderer(bpy.types.RenderEngine):
     global BtoARend
     global BtoABuckets
 
-    scene = bpy.context.scene
+    
 
     def _getPreviewMaterial(self,scene):
         objects_mats = {} 
@@ -58,6 +58,7 @@ class Renderer(bpy.types.RenderEngine):
     # we use it to detect preview rendering and call the implementation
     # in another method.
     def render(self, scene):
+        
         global BtoARend
         BtoARend = self
 
@@ -72,6 +73,7 @@ class Renderer(bpy.types.RenderEngine):
 
     # In this example, we fill the preview renders with a flat green color.
     def render_preview(self, scene):
+        
         global BtoARend
         global BtoABuckets
         self.scene = scene
@@ -209,7 +211,7 @@ class Renderer(bpy.types.RenderEngine):
         result = self.begin_result(x,
                                    self.size_y - y - height,
                                    width,height)
-        layer = result.layers[0]
+        layer = result.layers[0].passes[0]
         if buffer:
             bucket = []
             row = []
