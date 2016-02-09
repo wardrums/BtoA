@@ -195,7 +195,8 @@ class Renderer(bpy.types.RenderEngine):
             self.__DoProgressiveRender()
         else:
             AiRender(AI_RENDER_MODE_CAMERA )
-        AiASSWrite(b"/Users/levon/everything.ass")
+        # Uncomment to write Arnold scene file after rendering
+        #AiASSWrite(b"/file.ass")
         BtoABuckets = {}
         AiEnd()
 
