@@ -13,14 +13,14 @@ class BaseLight():
         bl = ld.BtoA
         # intensity and color
         AiNodeSetStr(self.alight,b"name",ld.name.encode('utf-8'))
-        AiNodeSetFlt(self.alight,b"intensity",ld.energy)
+        AiNodeSetFlt(self.alight,b"intensity",ld.energy*10)
         AiNodeSetFlt(self.alight,b"exposure",bl.exposure)
         AiNodeSetRGB(self.alight,b"color",ld.color.r,ld.color.g,ld.color.b)
         
         AiNodeSetBool(self.alight,b"mis",bl.mis)
         # bounces
-        AiNodeSetInt(self.alight,b"bounces",bl.bounces)
-        AiNodeSetFlt(self.alight,b"bounce_factor",bl.bounce_factor)
+        AiNodeSetInt(self.alight,b"max_bounces",bl.max_bounces)
+        AiNodeSetFlt(self.alight,b"indirect",bl.indirect)
 
         # shadows
         if not self.lightdata.BtoA.shadow_enable:

@@ -10,40 +10,79 @@ if "bpy" in locals():
 else:
     import bpy
 
-for member in dir(properties_material):
-    subclass = getattr(properties_material, member)
 
-    try:
-        # this is a horrible hack. Must figure out how to get this to work better
-        subclass.COMPAT_ENGINES.add('BtoA')
-        if subclass.bl_label in ["Material Specials",
-"SSS Presets",
-"Custom Properties",
-"Diffuse",
-"Flare",
-"Halo",
-"Mirror",
-"Options",
-"Physics",
-"Render Pipeline Options",
-"Shading",
-"Shadow",
-"Specular",
-"Subsurface Scattering",
-"Strand",
-"Density",
-"Integration",
-"Transparency",
-"Lighting"]:
-            subclass.COMPAT_ENGINES.remove('BtoA')
-
-    except:
-        pass
 ########################
 #
 # custom material properties
 #
 ########################
+
+   
+
+class BtoA_context_material(pm.MaterialButtonsPanel,bpy.types.Panel):
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
+    bl_label = "BtoA Materials"
+    bl_context = "material"
+    COMPAT_ENGINES = {'CYCLES'}
+
+    @classmethod
+    def poll(cls, context):
+        return (context.material or context.object)
+
+    def draw(self, context):
+        layout = self.layout
+
+        mat = context.material
+        ob = context.object
+        slot = context.material_slot
+        space = context.space_data
+        is_sortable = len(ob.material_slots) > 1
+
+        if ob:
+            rows = 1
+            if (is_sortable):
+                rows = 4
+
+            row = layout.row()
+
+            row.template_list("MATERIAL_UL_matslots", "", ob, "material_slots", ob, "active_material_index", rows=rows)
+
+            col = row.column(align=True)
+            col.operator("object.material_slot_add", icon='ZOOMIN', text="")
+            col.operator("object.material_slot_remove", icon='ZOOMOUT', text="")
+
+            col.menu("MATERIAL_MT_specials", icon='DOWNARROW_HLT', text="")
+
+            if is_sortable:
+                col.separator()
+
+                col.operator("object.material_slot_move", icon='TRIA_UP', text="").direction = 'UP'
+                col.operator("object.material_slot_move", icon='TRIA_DOWN', text="").direction = 'DOWN'
+
+            if ob.mode == 'EDIT':
+                row = layout.row(align=True)
+                row.operator("object.material_slot_assign", text="Assign")
+                row.operator("object.material_slot_select", text="Select")
+                row.operator("object.material_slot_deselect", text="Deselect")
+
+        split = layout.split(percentage=0.65)
+
+        if ob:
+            split.template_ID(ob, "active_material", new="material.new")
+            row = split.row()
+
+            if slot:
+                row.prop(slot, "link", text="")
+            else:
+                row.label()
+        elif mat:
+            split.template_ID(space, "pin_id")
+            split.separator()
+
+
+
+
 def rnaPropUpdate(self, context):
     self.update_tag()
 

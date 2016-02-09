@@ -93,15 +93,15 @@ class RenderButtonsPanel():
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'
     bl_context = "render"
-
+    COMPAT_ENGINES = {'BtoA'}
+    
     @classmethod
     def poll(cls, context):
         rd = context.scene.render
-        return (rd.use_game_engine == False) and (rd.engine in cls.COMPAT_ENGINES)
+        return rd.engine in cls.COMPAT_ENGINES
 
 class BtoA_interactive_settings(RenderButtonsPanel, bpy.types.Panel):
     bl_label = "Interactive Settings"
-    COMPAT_ENGINES = {'BtoA'}
 
     def draw(self, context):
         layout = self.layout
@@ -119,7 +119,6 @@ class BtoA_interactive_settings(RenderButtonsPanel, bpy.types.Panel):
 
 class BtoA_render_sample_settings(RenderButtonsPanel, bpy.types.Panel):
     bl_label = "Sampler Settings"
-    COMPAT_ENGINES = {'BtoA'}
 
     def draw(self, context):
         layout = self.layout
@@ -151,7 +150,6 @@ class BtoA_render_sample_settings(RenderButtonsPanel, bpy.types.Panel):
 
 class BtoA_render_raydepth_settings(RenderButtonsPanel, bpy.types.Panel):
     bl_label = "Ray Depth"
-    COMPAT_ENGINES = {'BtoA'}
 
     def draw(self, context):
         layout = self.layout
@@ -165,4 +163,3 @@ class BtoA_render_raydepth_settings(RenderButtonsPanel, bpy.types.Panel):
         col1.prop(BtoA,"GI_reflection_depth")
         col2.prop(BtoA,"GI_glossy_depth")
         col2.prop(BtoA,"GI_refraction_depth")
-

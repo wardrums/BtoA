@@ -1,8 +1,8 @@
 bl_info = {
     "name": "BtoA - Blender to Arnold",
-    "author": "Rudy Cortes - rudy@rudycortes.com, Levon Hudson",
+    "author": "Rudy Cortes - rudy@rudycortes.com",
     "version": (0, 0, 2),
-    "blender": (2, 7, 5),
+    "blender": (2, 5, 9),
     "api": 35622,
     "location": "Render > Engine > Arnold",
     "description": "Arnold integration for blender",

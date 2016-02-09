@@ -2,7 +2,7 @@ import imp
 from arnold import *
 from ..GuiUtils import pollLight
 from ..BaseLight import BaseLight
-
+from .. import utils
 from mathutils import Matrix
 from bpy.props import (CollectionProperty,StringProperty, BoolProperty,
                        IntProperty, FloatProperty, FloatVectorProperty,
@@ -30,11 +30,11 @@ def write(li):
     AiNodeSetStr(blight.alight,b"name",blight.lightdata.name.encode('utf-8'))
     # set position
     # fist apply the matrix
-    lmatrix = Matrix.Rotation(math.radians(-90),4,'X') * blight.light.matrix_world
-    lpos = lmatrix.to_translation()
-    positions = AiArrayAllocate(1,1,AI_TYPE_POINT)
-    AiArraySetPnt(positions,0,AtPoint(lpos.x,lpos.y,lpos.z))
-    AiNodeSetArray(blight.alight,b'position',positions)
+    matrices = AiArrayAllocate(1, 1, AI_TYPE_MATRIX);
+    lmatrix = blight.light.matrix_world.copy()
+    matrix = utils.getYUpMatrix(lmatrix)
+    AiArraySetMtx(matrices,  0 , matrix)
+    AiNodeSetArray(blight.alight, b"matrix", matrices)
     # write all common attributes
     blight.write()
 

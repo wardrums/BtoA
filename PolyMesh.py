@@ -77,12 +77,18 @@ class PolyMesh():
             AiNodeSetArray(self.amesh,b"uvlist",uvlist)
 
         # write the matrix
-        mmatrix =self.mesh.matrix_world
+        matrices = AiArrayAllocate(1, 1, AI_TYPE_MATRIX);
+        mmatrix =self.mesh.matrix_world.copy()
+        #tmatrix = mmatrix.transposed()
         matrix = utils.getYUpMatrix(mmatrix)
-        positions = AiArrayAllocate(1,1,AI_TYPE_MATRIX)
-        AiArraySetMtx(positions,0,matrix)
-        AiNodeSetArray(self.amesh,b'matrix',positions)
+        AiArraySetMtx(matrices,0,matrix)
+        AiNodeSetArray(self.amesh,b'matrix',matrices)
+        
+        #smoothing on.
+        AiNodeSetBool(self.amesh,b"smoothing",True)        
 
+                
+        
         # Material
         for mat in self.meshdata.materials:
             matid = mat.as_pointer()

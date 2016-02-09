@@ -18,8 +18,6 @@ class Renderer(bpy.types.RenderEngine):
     global BtoARend
     global BtoABuckets
 
-    
-
     def _getPreviewMaterial(self,scene):
         objects_mats = {} 
         for obj in [ob for ob in scene.objects if ob.is_visible(scene) and not ob.hide_render]:
@@ -69,6 +67,7 @@ class Renderer(bpy.types.RenderEngine):
             self.render_preview(scene)
         else:
             self.render_scene(scene)
+             
 
     # In this example, we fill the preview renders with a flat green color.
     def render_preview(self, scene):
@@ -195,8 +194,8 @@ class Renderer(bpy.types.RenderEngine):
         if (scene.BtoA.enable_progressive):
             self.__DoProgressiveRender()
         else:
-            res = AiRender(AI_RENDER_MODE_CAMERA)
-        AiASSWrite(b"/tmp/.ass/everything.ass", AI_NODE_ALL, False);    
+            AiRender(AI_RENDER_MODE_CAMERA )
+        AiASSWrite(b"/Users/levon/everything.ass")
         BtoABuckets = {}
         AiEnd()
 
@@ -210,6 +209,7 @@ class Renderer(bpy.types.RenderEngine):
                                    self.size_y - y - height,
                                    width,height)
         layer = result.layers[0].passes[0]
+        
         if buffer:
             bucket = []
             row = []
@@ -248,7 +248,10 @@ class Renderer(bpy.types.RenderEngine):
                         bucket[j] = edge
 
             layer.rect = bucket
-        
+
+        if self.test_break():
+            AiRenderInterrupt()
+                    
         self.end_result(result)
         
     g_displayCallback = AtDisplayCallBack(ArnoldDisplayCallback)

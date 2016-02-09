@@ -1,3 +1,4 @@
+
 from arnold import *
 from mathutils import Matrix
 
@@ -22,8 +23,9 @@ def MakeAtMatrix(bmatrix):
     return matrix
 
 def getYUpMatrix(bmatrix):
-    rotMatrix = Matrix.Rotation(math.radians(-90),4,'X')  * bmatrix 
-    return MakeAtMatrix(rotMatrix)
+    amatrix = bmatrix.transposed()
+    #rotMatrix = Matrix.Rotation(math.radians(90),4,'X')  * amatrix 
+    return MakeAtMatrix(amatrix)
 
 def mapValue(val):
     if val in [False,True]:

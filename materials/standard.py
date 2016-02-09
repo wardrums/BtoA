@@ -32,11 +32,6 @@ class BtoAStandardMaterialSettings(bpy.types.PropertyGroup):
     specular_roughness = FloatProperty(
                 name="Specular Roughness", description="Specular Roughness",
                 max = 1, min = 0,default=0.25)
-    specular_brdf = EnumProperty(items=(("0","Stretched Phong",""),
-                                 ("1","Ward Duer",""),
-                                 ("2","Cook Torrance","")),
-                                 name="BRDF", description="Specular BRDF", 
-                                 default="0")
     specular_anisotropy = FloatProperty(
                 name="Anisotropy", description="Specular Anisotropy",
                 max = 1, min = 0,default=0.5)
@@ -342,7 +337,6 @@ def write(mat,textures):
                                       st.Ks_color.g,
                                       st.Ks_color.b)
     AiNodeSetFlt(standard,b"specular_roughness",st.specular_roughness)
-    AiNodeSetInt(standard,b"specular_brdf",int(st.specular_brdf))
     AiNodeSetFlt(standard,b"specular_anisotropy",st.specular_anisotropy)
     AiNodeSetFlt(standard,b"specular_rotation",st.specular_rotation)
     AiNodeSetFlt(standard,b"Phong_exponent",st.Phong_exponent)

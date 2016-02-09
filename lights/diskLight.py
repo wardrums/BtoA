@@ -2,42 +2,51 @@ import imp
 from arnold import *
 from ..GuiUtils import pollLight
 from ..BaseLight import BaseLight
-from .. import utils
+from ..AiTypes import *
 from mathutils import Matrix
 from bpy.props import (CollectionProperty,StringProperty, BoolProperty,
                        IntProperty, FloatProperty, FloatVectorProperty,
                        EnumProperty, PointerProperty)
 from bl_ui import properties_data_lamp
-pm = properties_data_lamp
+from .. import utils
+from bl_ui.properties_data_lamp import DataButtonsPanel
 
+pm = properties_data_lamp
 
 if "bpy" not in locals():
     import bpy
 
-enumValue = ("SPOTLIGHT","Spot","")
+enumValue = ("DISKLIGHT","Disk","")
 blenderType = "SPOT"
-def _updatePenumbra(self,context):
-    context.lamp.spot_blend = self.penumbra_angle / context.lamp.spot_size
 
 # There must be one class that inherits from bpy.types.PropertyGroup
 # Here we place all the parameters for the Material
-class BtoASpotLightSettings(bpy.types.PropertyGroup):
-    penumbra_angle = FloatProperty(name="Penumbra Angle",
-                                   description="Penumbra Angle",
-                                   min = 0,max=180,default=1,
-                                   subtype="ANGLE",
-                                   update=_updatePenumbra)
-    aspect_ratio = FloatProperty(name="Aspect Ratio",
-                                description="Aspect",
-                                min = 0,max=10,default=1)
+class BtoAPointLightSettings(bpy.types.PropertyGroup):
+    opacity = FloatProperty(name="Opacity",default=1)
 
-className = BtoASpotLightSettings
+    indirect = ai_FLOAT(ai_name='indirect')
+    sss = ai_FLOAT(ai_name='sss')
+    diffuse = ai_FLOAT(ai_name='diffuse')
+    max_bounces = ai_INT(ai_name='max_bounces')
+#    filters = ai_NODEs(ai_name='filters')
+    affect_diffuse = ai_BOOL(ai_name='affect_diffuse')
+    exposure = ai_FLOAT(ai_name='exposure')
+    volume_samples = ai_INT(ai_name='volume_samples')
+    cast_volumetric_shadows = ai_BOOL(ai_name='cast_volumetric_shadows')
+    specular = ai_FLOAT(ai_name='specular')
+    time_samples = ai_FLOATs(ai_name='time_samples')
+    color = ai_RGB(ai_name='color')
+    intensity = ai_FLOAT(ai_name='intensity')
+    radius = ai_FLOAT(ai_name='radius')
+    volume = ai_FLOAT(ai_name='volume')    
+    #decay_type = ai_ENUM(ai_name='decay_type')
+
+className = BtoAPointLightSettings
 bpy.utils.register_class(className)
 
 def write(li):
-    print(li)
     blight = BaseLight(li)    
-    blight.alight = AiNode(b"spot_light")
+    blight.alight = AiNode(b"disk_light")
     AiNodeSetStr(blight.alight,b"name",blight.lightdata.name.encode('utf-8'))
     # set position
     # fist apply the matrix
@@ -47,36 +56,31 @@ def write(li):
     AiArraySetMtx(matrices,  0 , matrix)
     AiNodeSetArray(blight.alight, b"matrix", matrices)
     # write all common attributes
-    AiNodeSetFlt(blight.alight,b"cone_angle",math.degrees(blight.lightdata.spot_size))
-    AiNodeSetFlt(blight.alight,b"penumbra_angle",
-    math.degrees(blight.lightdata.BtoA.spotLight.penumbra_angle))
-    AiNodeSetFlt(blight.alight,b"aspect_ratio",blight.lightdata.BtoA.spotLight.aspect_ratio)
     blight.write()
 
 
-        
-        
-            
-    
-# Define as many GUI pannels as necessary, they must all follow this structure.
-class BtoA_SpotLight_gui(pm.DataButtonsPanel, bpy.types.Panel):
-    bl_label = "Spot Light"
+class BtoA_DiskLight_gui(DataButtonsPanel, bpy.types.Panel):
+    bl_label = "Disk Light"
     COMPAT_ENGINES = {'BtoA'}
 
+#    @classmethod
+#    def poll(cls, context):
+#        return pollLight(cls,context,enumValue[0],blendLights={"AREA"} )
     @classmethod
     def poll(cls, context):
-        return pollLight(cls,context,enumValue[0],blendLights={"SPOT"} )
-
+        lamp = context.lamp
+        engine = context.scene.render.engine
+        return (engine in cls.COMPAT_ENGINES)
+        
     def draw(self, context):
         try:
             layout = self.layout
             lamp = context.lamp
-            spot = lamp.BtoA.spotLight
+            disk = lamp.BtoA.diskLight
             split = layout.split()
 
             col1 = split.column()
             col2 = split.column()
-            col1.prop(lamp, "spot_size", text="Cone Angle")
             col1.prop(spot, "penumbra_angle", text="Penumbra")
             col2.prop(spot, "aspect_ratio", text="Aspect Ratio")
             col2.prop(lamp, "show_cone")

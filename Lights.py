@@ -7,12 +7,14 @@ from bl_ui.properties_data_lamp import DataButtonsPanel
 
 if "bpy" in locals():
     imp.reload(PointLight)
+    imp.reload(DiskLight)
     imp.reload(SpotLight)
 else:
     import bpy
-    from . import PointLight
-    from . import SpotLight
-
+    from .lights import pointLight
+    from .lights import spotLight
+    from .lights import diskLight
+    
 def updateBlenderLight(self,context):
     atype = context.lamp.BtoA.lightType
     context.lamp.type = self.arnoldBlenderMap[atype]
@@ -39,13 +41,12 @@ class BtoA_lamp_ui(DataButtonsPanel, bpy.types.Panel):
         col1.prop(lamp, "color", text="Color")
         col1.prop(lamp, "energy")
         col1.prop(bt,"exposure")
-        col1.prop(bt,"bounces",text="Bounces")
-        col1.prop(bt,"mis",text="Mis")
+        col1.prop(bt,"max_bounces",text="Max Bounces")
         col2.label("Affect:")
         col2.prop(lamp, "use_specular")
         col2.prop(lamp, "use_diffuse")
         col2.prop(bt,"normalize",text="Normalize")
-        col2.prop(bt,"bounce_factor",text="Bounce Factor")
+        col2.prop(bt,"indirect",text="Indirect")
 
 class BtoALampSettings(bpy.types.PropertyGroup):
     name="BtoALampSettings"
@@ -82,9 +83,9 @@ class BtoALampSettings(bpy.types.PropertyGroup):
                              default="POINTLIGHT",update=updateBlenderLight)
     # attrubutes that are common to all lights
     normalize = BoolProperty(name="Normalize",default=True)
-    bounces = IntProperty(name="Bounces",description="Max bounces for this light",
+    max_bounces = IntProperty(name="Max Bounces",description="Max bounces for this light",
                           default=999)
-    bounce_factor = FloatProperty(name="Bounce Factor",
+    indirect = FloatProperty(name="indirect",
                             min=0,max=10,default=1)
     exposure = FloatProperty(name="Exposure",
                             description="Light Exposure",
@@ -108,7 +109,7 @@ class BtoA_shadow_ui(DataButtonsPanel, bpy.types.Panel):
         lamp = context.lamp
         if lamp:
             engine = context.scene.render.engine in cls.COMPAT_ENGINES
-            ltype = lamp.type in {'POINT', 'SUN', 'SPOT', 'AREA'}
+            ltype = lamp.type in {'POINT', 'SUN', 'SPOT', 'AREA','DISK'}
             return lamp and ltype and engine
         else:
             return False
@@ -136,13 +137,18 @@ class BtoA_shadow_ui(DataButtonsPanel, bpy.types.Panel):
                 sub.prop(lamp, "shadow_soft_size", text="Soft Size")
 
             elif lamp.type == 'AREA':
-                sub = col.row(align=True)
+                sub = col1.row(align=True)
 
                 if lamp.shape == 'SQUARE':
                     sub.prop(lamp, "shadow_ray_samples_x", text="Samples")
                 elif lamp.shape == 'RECTANGLE':
                     sub.prop(lamp, "shadow_ray_samples_x", text="Samples X")
                     sub.prop(lamp, "shadow_ray_samples_y", text="Samples Y")
+            elif lamp.type == 'DISK':
+                sub = col1.row()
+                sub.label("Disk light")
+                sub.prop(lamp, "shadow_ray_samples", text="Samples")
+                sub.prop(lamp, "shadow_soft_size", text="Soft Size")
 
 class Lights:
     '''This class handles the export of all lights'''
@@ -151,7 +157,8 @@ class Lights:
         
     def writeLights(self):
         for li in bpy.data.lamps:
-            self.writeLight(li)
+            if li.users !=0:
+                self.writeLight(li)
 
     def writeLight(self,li):
         outli = None

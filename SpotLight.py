@@ -19,8 +19,8 @@ class SpotLight(BaseLight.BaseLight):
         self.alight = AiNode(b"spot_light")
         # set the matrix
         # fist apply the matrix
-        matrices = AiArrayAllocate(1, 1, AI_TYPE_MATRIX);
-        lmatrix = self.light.matrix_world
+        matrices = AiArrayAllocate(1, 1, AI_TYPE_MATRIX)
+        lmatrix = self.light.matrix_world.copy()
         matrix = utils.getYUpMatrix(lmatrix)
         AiArraySetMtx(matrices,  0 , matrix)
         AiNodeSetArray(self.alight, b"matrix", matrices)

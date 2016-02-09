@@ -17,11 +17,10 @@ class PointLight(BaseLight.BaseLight):
         AiNodeSetStr(self.alight,b"name",self.lightdata.name.encode('utf-8'))
         # set position
         # fist apply the matrix
-        lmatrix = Matrix.Rotation(math.radians(-90),4,'X') * self.light.matrix_world
-        lpos = lmatrix.to_translation()
-        positions = AiArrayAllocate(1,1,AI_TYPE_POINT)
-        AiArraySetPnt(positions,0,AtPoint(lpos.x,lpos.y,lpos.z))
-        AiNodeSetArray(self.alight,b'position',positions)
+        lmatrix = self.light.matrix_world
+        tmatrix = mmatrix.transposed()
+        AiArraySetMtx(matrices,  0 , tmatrix)
+        AiNodeSetArray(self.alight, b"matrix", matrices)
 
         # Write common attributes
         super(PointLight,self).write()
