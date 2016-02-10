@@ -166,14 +166,11 @@ class BtoAStandardMaterialSpecularGui(pm.MaterialButtonsPanel, bpy.types.Panel):
             col2 = split.column()
             col1.prop(st, "Ks_color", text="")
             col1.prop(st, "Ks", text="Intensity")
-            col2.prop(st, "specular_brdf", text="")
 
             col2.prop(st, "specular_roughness", text="Roughness")
-            if st.specular_brdf == "1":
-                col1.prop(st, "specular_anisotropy", text="Anisotropy")
-                col2.prop(st, "specular_rotation", text="Rotation")
-            if st.specular_brdf == "0":
-                col1.prop(st,"Phong_exponent",text="Phong Exponent")
+            col1.prop(st, "specular_anisotropy", text="Anisotropy")
+            col2.prop(st, "specular_rotation", text="Rotation")
+
 
             col2.prop(st, "direct_specular", text="Direct Specular")
             col2.prop(st, "indirect_specular", text="Indirect Specular")
@@ -339,7 +336,6 @@ def write(mat,textures):
     AiNodeSetFlt(standard,b"specular_roughness",st.specular_roughness)
     AiNodeSetFlt(standard,b"specular_anisotropy",st.specular_anisotropy)
     AiNodeSetFlt(standard,b"specular_rotation",st.specular_rotation)
-    AiNodeSetFlt(standard,b"Phong_exponent",st.Phong_exponent)
     AiNodeSetFlt(standard,b"direct_specular",st.direct_specular)
     AiNodeSetFlt(standard,b"indirect_specular",st.indirect_specular)
     AiNodeSetBool(standard,b"enable_glossy_caustics",
