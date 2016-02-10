@@ -7,13 +7,13 @@ from bl_ui.properties_data_lamp import DataButtonsPanel
 
 if "bpy" in locals():
     imp.reload(PointLight)
-    imp.reload(DiskLight)
+#TODO    imp.reload(DiskLight)
     imp.reload(SpotLight)
 else:
     import bpy
     from .lights import pointLight
     from .lights import spotLight
-    from .lights import diskLight
+#TODO    from .lights import diskLight
     
 def updateBlenderLight(self,context):
     atype = context.lamp.BtoA.lightType
